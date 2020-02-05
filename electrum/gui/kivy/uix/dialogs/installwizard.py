@@ -1086,10 +1086,12 @@ class InstallWizard(BaseWizard, Widget):
         t = threading.Thread(target = target)
         t.start()
 
-    def terminate(self, *, storage=None, aborted=False):
-        if storage is None and not aborted:
-            storage = self.create_storage(self.path)
-        self.dispatch('on_wizard_complete', storage)
+    def terminate(self, *, db=None, aborted=False):
+        if db is None and not aborted:
+            db = self.get_db()
+        storage = self.create_storage(self.path)
+        db.write(storage)
+        self.dispatch('on_wizard_complete', db, storage)
 
     def choice_dialog(self, **kwargs):
         choices = kwargs['choices']

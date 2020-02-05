@@ -166,7 +166,7 @@ class ElectrumWindow(App):
     def on_use_change(self, instance, x):
         if self.wallet:
             self.wallet.use_change = self.use_change
-            self.wallet.storage.put('use_change', self.use_change)
+            self.wallet.db.put('use_change', self.use_change)
             self.wallet.storage.write()
 
     use_unconfirmed = BooleanProperty(False)
@@ -588,9 +588,9 @@ class ElectrumWindow(App):
         else:
             return ''
 
-    def on_wizard_complete(self, wizard, storage):
+    def on_wizard_complete(self, wizard, db, storage):
         if storage:
-            wallet = Wallet(storage, config=self.electrum_config)
+            wallet = Wallet(db, storage, config=self.electrum_config)
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
             self.load_wallet(wallet)
@@ -624,7 +624,7 @@ class ElectrumWindow(App):
                 self.load_wallet(wallet)
         else:
             def launch_wizard():
-                storage = WalletStorage(path, manual_upgrades=True)
+                storage = WalletStorage(path)
                 if not storage.file_exists():
                     wizard = Factory.InstallWizard(self.electrum_config, self.plugins)
                     wizard.path = path

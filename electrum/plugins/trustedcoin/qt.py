@@ -227,7 +227,9 @@ class Plugin(TrustedCoinPlugin):
             wizard.confirm_dialog(title='', message=msg, run_next = lambda x: wizard.run('accept_terms_of_use'))
         except GoBack:
             # user clicked 'Cancel' and decided to move wallet file manually
-            wizard.create_storage(wizard.path)
+            db = wizard.get_db()
+            storage = wizard.create_storage(wizard.path)
+            db.write(storage)
             raise
 
     def accept_terms_of_use(self, window):
